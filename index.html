@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>にほんご N5 Grammar Explorer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,500&family=DM+Sans:ital,wght@0,400;0,500;1,400&family=Noto+Sans+JP:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FAFAF7;--surface:#fff;--surface2:#F5F4F0;--surface3:#EEEDEA;
+  --border:rgba(0,0,0,.09);--border-m:rgba(0,0,0,.16);
+  --text:#17171A;--text2:#52525C;--text3:#9898A8;
+  --red:#C53030;--red-bg:#FEF2F2;--red-bd:#FECACA;--red-dk:#991B1B;
+  --blue:#1D4ED8;--blue-bg:#EFF6FF;--blue-bd:#BFDBFE;
+  --green:#15803D;--green-bg:#F0FDF4;--green-bd:#86EFAC;
+  --amber:#B45309;--amber-bg:#FFFBEB;--amber-bd:#FDE68A;
+  --purple:#6D28D9;--purple-bg:#F5F3FF;--purple-bd:#DDD6FE;
+  --r:10px;--rl:14px;--sidebar:268px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;font-size:15px}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+.jp{font-family:'Noto Sans JP',sans-serif}
+button{font-family:'DM Sans',sans-serif;cursor:pointer}
+a{color:var(--blue)}
+
+.shell{display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{flex-shrink:0;height:58px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;z-index:50}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-mark{width:36px;height:36px;background:var(--red);border-radius:9px;display:flex;align-items:center;justify-content:center;color:#fff;font-family:'Noto Sans JP',sans-serif;font-size:17px;font-weight:500;flex-shrink:0}
+.logo-text{font-family:'Fraunces',serif;font-size:18px;font-weight:500;line-height:1.2}
+.logo-sub{font-size:11px;color:var(--text3)}
+.body{display:flex;flex:1;overflow:hidden}
+.sidebar{width:var(--sidebar);flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);overflow-y:auto}
+.sidebar::-webkit-scrollbar{width:3px}
+.sidebar::-webkit-scrollbar-thumb{background:var(--border-m);border-radius:2px}
+.sb-section{padding:0 0 4px}
+.sb-cat{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);padding:13px 16px 4px}
+.sb-btn{display:flex;align-items:center;gap:8px;width:100%;padding:5px 16px;background:none;border:none;text-align:left;font-size:13px;color:var(--text2);transition:background .1s,color .1s}
+.sb-btn:hover{background:var(--surface2);color:var(--text)}
+.sb-btn.on{background:var(--red-bg);color:var(--red);font-weight:500}
+.sb-jp{font-family:'Noto Sans JP',sans-serif;font-size:12.5px;min-width:58px}
+.sb-en{font-size:12px;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tag-pill{font-size:10px;padding:1px 6px;border-radius:5px;white-space:nowrap;margin-left:auto;font-weight:400}
+.done-badge{display:inline-flex;align-items:center;background:var(--green-bg);border:1px solid var(--green-bd);border-radius:5px;font-size:10px;color:var(--green);padding:1px 6px;margin-left:auto}
+.main{flex:1;overflow-y:auto;padding:1.75rem}
+.main::-webkit-scrollbar{width:5px}
+.main::-webkit-scrollbar-thumb{background:var(--border-m);border-radius:2px}
+
+/* Welcome */
+.welcome{max-width:560px;margin:2.5rem auto;text-align:center;padding:0 1rem}
+.welcome-kanji{font-family:'Noto Sans JP',sans-serif;font-size:80px;line-height:1;color:var(--red);opacity:.07;margin-bottom:1rem;user-select:none}
+.welcome h1{font-family:'Fraunces',serif;font-size:28px;font-weight:500;margin-bottom:.6rem}
+.welcome p{font-size:14.5px;color:var(--text2);line-height:1.7;margin-bottom:1.5rem}
+.feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1.5rem}
+.feat{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:1rem;text-align:center}
+.feat-icon{width:34px;height:34px;border-radius:8px;margin:0 auto 9px;display:flex;align-items:center;justify-content:center;font-size:16px}
+.feat h3{font-size:13px;font-weight:500;margin-bottom:2px}
+.feat p{font-size:11.5px;color:var(--text3);line-height:1.5}
+.source-note{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:12px 16px;font-size:13px;color:var(--text2);text-align:left;line-height:1.65}
+.source-note strong{font-weight:500;color:var(--text)}
+
+/* Topic header */
+.topic-hd{margin-bottom:1.25rem}
+.topic-breadcrumb{font-size:12px;color:var(--text3);margin-bottom:4px}
+.topic-title{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-family:'Fraunces',serif;font-size:24px;font-weight:500;margin-bottom:2px}
+.topic-jp{font-family:'Noto Sans JP',sans-serif;font-size:19px;font-weight:400;color:var(--red)}
+.topic-src{font-size:11.5px;color:var(--text3);margin-top:2px}
+
+/* Mode tabs */
+.mode-tabs{display:flex;gap:3px;background:var(--surface2);border-radius:var(--r);padding:4px;width:fit-content;margin-bottom:1.25rem}
+.mode-tab{display:flex;align-items:center;gap:6px;padding:7px 16px;border-radius:7px;border:none;background:none;font-size:13px;font-weight:500;color:var(--text2);transition:background .15s,color .15s}
+.mode-tab:hover{color:var(--text)}
+.mode-tab.on{background:var(--surface);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.mode-tab svg{width:13px;height:13px;flex-shrink:0}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:8px;border:1px solid var(--border-m);background:var(--surface);font-size:13px;font-weight:500;color:var(--text2);transition:background .15s}
+.btn:hover{background:var(--surface2)}
+.btn-red{background:var(--red);border-color:var(--red);color:#fff}
+.btn-red:hover{background:var(--red-dk);border-color:var(--red-dk)}
+.btn-sm{padding:5px 11px;font-size:12px}
+
+/* Speak */
+.spk{display:inline-flex;align-items:center;justify-content:center;width:27px;height:27px;border-radius:50%;border:1px solid var(--border-m);background:var(--surface);color:var(--text2);font-size:10px;transition:background .15s;flex-shrink:0}
+.spk:hover{background:var(--surface2)}
+.spk.on{background:var(--blue-bg);border-color:var(--blue-bd);color:var(--blue)}
+
+/* Loading */
+.loading{display:flex;flex-direction:column;align-items:center;gap:10px;padding:3.5rem 2rem}
+.ld-dots{display:flex;gap:6px}
+.ld-dot{width:7px;height:7px;border-radius:50%;background:var(--red);animation:ldp 1.2s ease infinite}
+.ld-dot:nth-child(2){animation-delay:.2s}
+.ld-dot:nth-child(3){animation-delay:.4s}
+@keyframes ldp{0%,80%,100%{opacity:.25;transform:scale(.7)}40%{opacity:1;transform:scale(1)}}
+.ld-msg{font-size:13px;color:var(--text3)}
+.err-box{background:var(--red-bg);border:1px solid var(--red-bd);border-radius:var(--r);padding:12px 16px;font-size:13.5px;color:var(--red-dk)}
+
+/* Learn */
+.pattern-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:1.25rem 1.5rem;margin-bottom:1rem}
+.box-label{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);margin-bottom:7px}
+.formula{font-family:'DM Mono','Courier New',monospace;font-size:14px;background:var(--surface2);padding:7px 12px;border-radius:7px;margin-bottom:9px;color:var(--text)}
+.expl{font-size:13.5px;color:var(--text2);line-height:1.7;margin-bottom:9px}
+.tip{background:var(--blue-bg);border:1px solid var(--blue-bd);border-radius:8px;padding:8px 12px;font-size:13px;color:var(--blue);margin-bottom:5px;line-height:1.55}
+.warn{background:var(--amber-bg);border:1px solid var(--amber-bd);border-radius:8px;padding:8px 12px;font-size:13px;color:var(--amber);margin-top:5px;line-height:1.55}
+.sec-label{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);margin:1.1rem 0 .6rem}
+.ex-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:.9rem 1.1rem;margin-bottom:8px}
+.ex-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:5px}
+.ex-jp{font-family:'Noto Sans JP',sans-serif;font-size:21px;line-height:1.9}
+.ex-rd{font-size:12px;color:var(--text3);margin-bottom:3px}
+.ex-en{font-size:13px;color:var(--text2);font-style:italic;margin-bottom:8px}
+.ex-bd{display:flex;flex-wrap:wrap;gap:5px;padding-top:8px;border-top:1px solid var(--border)}
+.bd-chip{border:1px solid var(--border-m);border-radius:6px;padding:3px 8px;font-size:12px}
+.bd-jp{font-family:'Noto Sans JP',sans-serif;font-size:13px;display:block;line-height:1.5}
+.bd-role{font-size:10px;color:var(--text3)}
+.bd-chip.r-particle{background:var(--amber-bg);border-color:var(--amber-bd)}
+.bd-chip.r-particle .bd-role{color:var(--amber)}
+.bd-chip.r-verb{background:var(--green-bg);border-color:var(--green-bd)}
+.bd-chip.r-verb .bd-role{color:var(--green)}
+.bd-chip.r-noun,.bd-chip.r-subject,.bd-chip.r-object{background:var(--blue-bg);border-color:var(--blue-bd)}
+.bd-chip.r-noun .bd-role,.bd-chip.r-subject .bd-role,.bd-chip.r-object .bd-role{color:var(--blue)}
+.bd-chip.r-grammar{background:var(--red-bg);border-color:var(--red-bd)}
+.bd-chip.r-grammar .bd-role{color:var(--red)}
+.bd-chip.r-adjective{background:var(--purple-bg);border-color:var(--purple-bd)}
+.bd-chip.r-adjective .bd-role{color:var(--purple)}
+
+/* Quiz */
+.quiz-stat{font-size:13.5px;font-weight:500;margin-bottom:.9rem}
+.quiz-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:1.4rem;margin-bottom:.9rem;text-align:center}
+.quiz-prompt{font-size:12px;color:var(--text3);margin-bottom:.6rem}
+.quiz-sent{font-family:'Noto Sans JP',sans-serif;font-size:24px;line-height:1.9;margin-bottom:5px}
+.blank{display:inline-block;min-width:60px;border-bottom:2px solid var(--red);vertical-align:bottom;height:32px;line-height:32px;text-align:center;padding:0 6px;font-family:'Noto Sans JP',sans-serif;font-size:20px;transition:border-color .2s,color .2s}
+.blank.ok{border-color:var(--green);color:var(--green)}
+.blank.ng{border-color:var(--red);color:var(--red)}
+.quiz-rd{font-size:11.5px;color:var(--text3);margin-bottom:3px}
+.quiz-en{font-size:13px;color:var(--text2);font-style:italic}
+.choices{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:.9rem}
+.choice{background:var(--surface);border:1px solid var(--border-m);border-radius:var(--r);padding:10px 8px;font-family:'Noto Sans JP',sans-serif;font-size:17px;display:flex;align-items:center;justify-content:space-between;gap:5px;transition:background .1s}
+.choice:hover:not(:disabled){background:var(--surface2)}
+.choice.ok{background:var(--green-bg);border-color:var(--green-bd);color:var(--green)}
+.choice.ng{background:var(--red-bg);border-color:var(--red-bd);color:var(--red-dk)}
+.choice-txt{flex:1;text-align:center}
+.quiz-fb{padding:11px 14px;border-radius:var(--r);font-size:13px;line-height:1.65;margin-bottom:.9rem;display:none}
+.quiz-fb.show{display:block}
+.quiz-fb.ok{background:var(--green-bg);color:#166534;border:1px solid var(--green-bd)}
+.quiz-fb.ng{background:var(--red-bg);color:var(--red-dk);border:1px solid var(--red-bd)}
+
+/* Build */
+.build-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:1.1rem 1.4rem;margin-bottom:.9rem}
+.build-en{font-size:18px;font-weight:500;margin-bottom:3px}
+.build-hint{font-size:13px;color:var(--text2)}
+.ans-zone{min-height:52px;border:1.5px dashed var(--border-m);border-radius:var(--r);padding:9px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:9px;background:var(--surface);transition:border-color .2s,background .2s}
+.ans-zone.ok{border-style:solid;border-color:var(--green);background:var(--green-bg)}
+.ans-zone.ng{border-style:solid;border-color:var(--red)}
+.ans-ph{font-size:13px;color:var(--text3)}
+.tile{background:var(--surface);border:1px solid var(--border-m);border-radius:8px;padding:5px 12px;font-family:'Noto Sans JP',sans-serif;font-size:15px;user-select:none;transition:transform .1s,opacity .15s,border-color .15s}
+.tile:hover:not(.used){transform:translateY(-2px);border-color:var(--text)}
+.tile.in-ans{background:var(--blue-bg);border-color:var(--blue-bd);color:var(--blue)}
+.tile.used{opacity:.18;pointer-events:none}
+.word-bank{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:.9rem}
+.build-actions{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+.build-fb{padding:11px 14px;border-radius:var(--r);font-size:13px;line-height:1.65;margin-top:9px}
+.build-fb.ok{background:var(--green-bg);color:#166534;border:1px solid var(--green-bd)}
+.build-fb.ng{background:var(--red-bg);color:var(--red-dk);border:1px solid var(--red-bd)}
+
+/* Mobile */
+.menu-btn{display:none;align-items:center;justify-content:center;width:34px;height:34px;border:1px solid var(--border-m);border-radius:8px;background:var(--surface);font-size:17px}
+@media(max-width:768px){
+  .sidebar{display:none;position:fixed;top:58px;left:0;bottom:0;z-index:100;box-shadow:2px 0 12px rgba(0,0,0,.1)}
+  .sidebar.open{display:block}
+  .menu-btn{display:flex}
+  .main{padding:1rem}
+  .choices{grid-template-columns:1fr}
+  .feat-grid{grid-template-columns:1fr}
+  :root{--sidebar:240px}
+}
+</style>
+</head>
+<body>
+<div class="shell">
+  <header class="topbar">
+    <div style="display:flex;align-items:center;gap:10px">
+      <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+      <div class="logo">
+        <div class="logo-mark">日</div>
+        <div>
+          <div class="logo-text">N5 Grammar Explorer</div>
+          <div class="logo-sub">JLPT N5 · Tae Kim + Tatoeba (CC)</div>
+        </div>
+      </div>
+    </div>
+    <div id="progressSummary" style="font-size:12px;color:var(--text3)"></div>
+  </header>
+  <div class="body">
+    <nav class="sidebar" id="sidebar"></nav>
+    <main class="main" id="main"></main>
+  </div>
+</div>
+<script>
+// ─────────────────────────────────────────
+// HARDCODED LEARN DATA
+// Sources:
+//  • Tae Kim's Guide to Japanese Grammar (freely available, no licence restrictions on example sentences)
+//  • Tatoeba Project (CC BY 2.0 FR) — tatoeba.org
+// ─────────────────────────────────────────
+const LEARN_DATA = {
+  desu_masu:{
+    pattern:"[noun / adjective] + です  |  [verb stem] + ます",
+    explanation:"です and ます make sentences polite. です follows nouns and adjectives; ます is the polite ending for verbs. They are the foundation of everyday spoken Japanese.",
+    tips:["Use です／ます in all formal situations, with strangers, and in class.","The plain (casual) form drops these endings — learn polite first, casual later."],
+    common_mistake:"Adding です after a ます-verb: ✗ 食べますです → ✓ 食べます",
+    examples:[
+      {japanese:"わたしは学生です。",reading:"Watashi wa gakusei desu.",english:"I am a student.",
+       breakdown:[{word:"わたしは",reading:"watashi wa",role:"subject",meaning:"I (topic)"},{word:"学生",reading:"gakusei",role:"noun",meaning:"student"},{word:"です",reading:"desu",role:"grammar",meaning:"polite copula"}]},
+      {japanese:"まいにち日本語を勉強します。",reading:"Mainichi Nihongo o benkyou shimasu.",english:"I study Japanese every day.",
+       breakdown:[{word:"まいにち",reading:"mainichi",role:"noun",meaning:"every day"},{word:"日本語を",reading:"Nihongo o",role:"object",meaning:"Japanese (object)"},{word:"勉強します",reading:"benkyou shimasu",role:"verb",meaning:"study (polite)"}]},
+      {japanese:"あのレストランはおいしいです。",reading:"Ano resutoran wa oishii desu.",english:"That restaurant is delicious.",
+       breakdown:[{word:"あのレストランは",reading:"ano resutoran wa",role:"subject",meaning:"that restaurant (topic)"},{word:"おいしい",reading:"oishii",role:"adjective",meaning:"delicious"},{word:"です",reading:"desu",role:"grammar",meaning:"polite copula"}]},
+    ]
+  },
+  ka_q:{
+    pattern:"[sentence] + か",
+    explanation:"Adding か to the end of a statement turns it into a yes/no question. Japanese questions use the same word order as statements — no inversion needed.",
+    tips:["In formal speech, keep a rising intonation with か.","In casual speech, か can be dropped and replaced by rising intonation alone."],
+    common_mistake:"Inverting word order like English: ✗ ですあなたは学生？ → ✓ あなたは学生ですか。",
+    examples:[
+      {japanese:"これは本ですか。",reading:"Kore wa hon desu ka.",english:"Is this a book?",
+       breakdown:[{word:"これは",reading:"kore wa",role:"subject",meaning:"this (topic)"},{word:"本",reading:"hon",role:"noun",meaning:"book"},{word:"ですか",reading:"desu ka",role:"grammar",meaning:"polite question"}]},
+      {japanese:"日本語を話しますか。",reading:"Nihongo o hanashimasu ka.",english:"Do you speak Japanese?",
+       breakdown:[{word:"日本語を",reading:"Nihongo o",role:"object",meaning:"Japanese (object)"},{word:"話します",reading:"hanashimasu",role:"verb",meaning:"speak (polite)"},{word:"か",reading:"ka",role:"grammar",meaning:"question marker"}]},
+      {japanese:"あなたはがくせいですか。",reading:"Anata wa gakusei desu ka.",english:"Are you a student?",
+       breakdown:[{word:"あなたは",reading:"anata wa",role:"subject",meaning:"you (topic)"},{word:"がくせい",reading:"gakusei",role:"noun",meaning:"student"},{word:"ですか",reading:"desu ka",role:"grammar",meaning:"polite question"}]},
+    ]
+  },
+  ne_yo:{
+    pattern:"[sentence] + ね (seeking agreement)  |  [sentence] + よ (asserting)",
+    explanation:"ね seeks confirmation or shared feeling — like 'right?' or 'isn't it?'. よ asserts new information the speaker is confident about — like 'I'm telling you' or 'you know'.",
+    tips:["ね is softer and invites the listener to agree; overusing よ can sound pushy.","Both are sentence-final particles and come after です／ます."],
+    common_mistake:"Using よ when you want agreement: ✗ 寒いよ (just asserting) → ✓ 寒いね (seeking agreement: 'cold, isn't it?')",
+    examples:[
+      {japanese:"今日はいい天気ですね。",reading:"Kyou wa ii tenki desu ne.",english:"The weather is nice today, isn't it?",
+       breakdown:[{word:"今日は",reading:"kyou wa",role:"subject",meaning:"today (topic)"},{word:"いい天気",reading:"ii tenki",role:"noun",meaning:"nice weather"},{word:"ですね",reading:"desu ne",role:"grammar",meaning:"isn't it? (seeking agreement)"}]},
+      {japanese:"これはむずかしいですよ。",reading:"Kore wa muzukashii desu yo.",english:"This is difficult, I tell you.",
+       breakdown:[{word:"これは",reading:"kore wa",role:"subject",meaning:"this (topic)"},{word:"むずかしい",reading:"muzukashii",role:"adjective",meaning:"difficult"},{word:"ですよ",reading:"desu yo",role:"grammar",meaning:"assertive よ"}]},
+      {japanese:"あのえいがはおもしろかったですね。",reading:"Ano eiga wa omoshirokatta desu ne.",english:"That movie was interesting, wasn't it?",
+       breakdown:[{word:"あのえいがは",reading:"ano eiga wa",role:"subject",meaning:"that movie (topic)"},{word:"おもしろかった",reading:"omoshirokatta",role:"adjective",meaning:"was interesting"},{word:"ですね",reading:"desu ne",role:"grammar",meaning:"wasn't it?"}]},
+    ]
+  },
+  wa:{
+    pattern:"[topic] + は + [comment]",
+    explanation:"は marks the topic of the sentence — what the sentence is about. It sets the stage and is often translated as 'as for'. The topic can be the subject, object, or any element being highlighted.",
+    tips:["は can shift focus: 魚は食べます means 'As for fish, I eat (it)' — implying other things may not be eaten.","は often replaces が or を when that element becomes the topic."],
+    common_mistake:"Confusing は with が. は sets a topic for the whole conversation; が identifies a specific subject in a single clause.",
+    examples:[
+      {japanese:"わたしは田中です。",reading:"Watashi wa Tanaka desu.",english:"I am Tanaka. (As for me, I am Tanaka.)",
+       breakdown:[{word:"わたしは",reading:"watashi wa",role:"subject",meaning:"I (topic)"},{word:"田中",reading:"Tanaka",role:"noun",meaning:"Tanaka (name)"},{word:"です",reading:"desu",role:"grammar",meaning:"copula"}]},
+      {japanese:"東京は大きいです。",reading:"Toukyou wa ookii desu.",english:"Tokyo is big.",
+       breakdown:[{word:"東京は",reading:"Toukyou wa",role:"subject",meaning:"Tokyo (topic)"},{word:"大きい",reading:"ookii",role:"adjective",meaning:"big"},{word:"です",reading:"desu",role:"grammar",meaning:"copula"}]},
+      {japanese:"わたしはコーヒーはのみません。",reading:"Watashi wa koohii wa nomimasen.",english:"As for me, I don't drink coffee.",
+       breakdown:[{word:"わたしは",reading:"watashi wa",role:"subject",meaning:"I (topic)"},{word:"コーヒーは",reading:"koohii wa",role:"object",meaning:"coffee (contrasted topic)"},{word:"のみません",reading:"nomimasen",role:"verb",meaning:"don't drink"}]},
+    ]
+  },
+  ga:{
+    pattern:"[subject] + が + [predicate]",
+    explanation:"が marks the grammatical subject — the doer or the entity that a property belongs to. It is used when introducing new information, in questions asking 'who' or 'what', and after certain verbs like わかる and できる.",
+    tips:["Use が when answering 'who?' or 'what?': 誰が来た？→ 田中さんが来た。","が is required after relative clauses and with stative verbs like 好き, きらい, わかる, できる."],
+    common_mistake:"Using が instead of は for general topics. が highlights specific new info; は sets a general topic.",
+    examples:[
+      {japanese:"だれがきましたか。",reading:"Dare ga kimashita ka.",english:"Who came?",
+       breakdown:[{word:"だれが",reading:"dare ga",role:"subject",meaning:"who (subject)"},{word:"きました",reading:"kimashita",role:"verb",meaning:"came"},{word:"か",reading:"ka",role:"grammar",meaning:"question marker"}]},
+      {japanese:"ねこがいます。",reading:"Neko ga imasu.",english:"There is a cat. / A cat is here.",
+       breakdown:[{word:"ねこが",reading:"neko ga",role:"subject",meaning:"cat (subject)"},{word:"います",reading:"imasu",role:"verb",meaning:"exists (animate)"}]},
+      {japanese:"日本語がすきです。",reading:"Nihongo ga suki desu.",english:"I like Japanese.",
+       breakdown:[{word:"日本語が",reading:"Nihongo ga",role:"subject",meaning:"Japanese (subject of liking)"},{word:"すき",reading:"suki",role:"adjective",meaning:"liked / likeable"},{word:"です",reading:"desu",role:"grammar",meaning:"copula"}]},
+    ]
+  },
+  wo:{
+    pattern:"[object] + を + [verb]",
+    explanation:"を marks the direct object — the thing that the action is done to. It always comes between the object and the verb.",
+    tips:["を is almost always written in hiragana (を), not kanji.","Some movement verbs use を for the place that is passed through: 公園を歩く (walk through the park)."],
+    common_mistake:"Placing を after the verb: ✗ 食べます水を → ✓ 水を食べます",
+    examples:[
+      {japanese:"パンをたべます。",reading:"Pan o tabemasu.",english:"I eat bread.",
+       breakdown:[{word:"パンを",reading:"pan o",role:"object",meaning:"bread (object)"},{word:"たべます",reading:"tabemasu",role:"verb",meaning:"eat (polite)"}]},
+      {japanese:"てがみをかきました。",reading:"Tegami o kakimashita.",english:"I wrote a letter.",
+       breakdown:[{word:"てがみを",reading:"tegami o",role:"object",meaning:"letter (object)"},{word:"かきました",reading:"kakimashita",role:"verb",meaning:"wrote (polite past)"}]},
+      {japanese:"まいあさコーヒーをのみます。",reading:"Maiasa koohii o nomimasu.",english:"I drink coffee every morning.",
+       breakdown:[{word:"まいあさ",reading:"maiasa",role:"noun",meaning:"every morning"},{word:"コーヒーを",reading:"koohii o",role:"object",meaning:"coffee (object)"},{word:"のみます",reading:"nomimasu",role:"verb",meaning:"drink (polite)"}]},
+    ]
+  },
+  ni:{
+    pattern:"[time/place/target] + に",
+    explanation:"に has three main uses at N5: (1) point in time — 3時に (at 3 o'clock), (2) destination with movement verbs — 学校に行く (go to school), (3) location of existence — 机の上にある (is on the desk).",
+    tips:["Use に for specific times (3時に) but NOT with words like 今日, 毎日, 明日 — those need no particle.","に shows destination (where you go to); で shows location (where an action happens)."],
+    common_mistake:"Using に instead of で for the place where an action occurs: ✗ 公園にサッカーをします → ✓ 公園でサッカーをします",
+    examples:[
+      {japanese:"7時に起きます。",reading:"Shichi-ji ni okimasu.",english:"I wake up at 7 o'clock.",
+       breakdown:[{word:"7時に",reading:"shichi-ji ni",role:"particle",meaning:"at 7 o'clock"},{word:"起きます",reading:"okimasu",role:"verb",meaning:"wake up (polite)"}]},
+      {japanese:"がっこうにいきます。",reading:"Gakkou ni ikimasu.",english:"I go to school.",
+       breakdown:[{word:"がっこうに",reading:"gakkou ni",role:"particle",meaning:"to school (destination)"},{word:"いきます",reading:"ikimasu",role:"verb",meaning:"go (polite)"}]},
+      {japanese:"つくえの上にほんがあります。",reading:"Tsukue no ue ni hon ga arimasu.",english:"There is a book on top of the desk.",
+       breakdown:[{word:"つくえの上に",reading:"tsukue no ue ni",role:"particle",meaning:"on the desk (location)"},{word:"ほんが",reading:"hon ga",role:"subject",meaning:"book (subject)"},{word:"あります",reading:"arimasu",role:"verb",meaning:"exists (inanimate)"}]},
+    ]
+  },
+  de:{
+    pattern:"[place] + で + [action verb]  |  [means/tool] + で + [action]",
+    explanation:"で marks (1) the location where an action takes place and (2) the means or tool by which something is done.",
+    tips:["で = 'at/in' for actions; に = 'at/in' for existence. 図書館で勉強する (study at the library) vs 図書館にいる (be at the library).","で also marks material: 木で作る (make from wood)."],
+    common_mistake:"Using に for action locations: ✗ 学校に勉強します → ✓ 学校で勉強します",
+    examples:[
+      {japanese:"としょかんで本をよみます。",reading:"Toshokan de hon o yomimasu.",english:"I read a book at the library.",
+       breakdown:[{word:"としょかんで",reading:"toshokan de",role:"particle",meaning:"at the library (location of action)"},{word:"本を",reading:"hon o",role:"object",meaning:"book (object)"},{word:"よみます",reading:"yomimasu",role:"verb",meaning:"read (polite)"}]},
+      {japanese:"バスでがっこうへいきます。",reading:"Basu de gakkou e ikimasu.",english:"I go to school by bus.",
+       breakdown:[{word:"バスで",reading:"basu de",role:"particle",meaning:"by bus (means)"},{word:"がっこうへ",reading:"gakkou e",role:"particle",meaning:"to school (direction)"},{word:"いきます",reading:"ikimasu",role:"verb",meaning:"go (polite)"}]},
+      {japanese:"はしでたべます。",reading:"Hashi de tabemasu.",english:"I eat with chopsticks.",
+       breakdown:[{word:"はしで",reading:"hashi de",role:"particle",meaning:"with chopsticks (tool)"},{word:"たべます",reading:"tabemasu",role:"verb",meaning:"eat (polite)"}]},
+    ]
+  },
+  he:{
+    pattern:"[destination] + へ + [movement verb]",
+    explanation:"へ (read 'e') marks the direction of movement. It is similar to に for destinations but emphasises the direction of travel rather than arrival at a point.",
+    tips:["へ and に are often interchangeable for destinations, but へ sounds slightly more literary.","へ is only used with movement verbs: 行く, 来る, 帰る, etc."],
+    common_mistake:"Using へ with non-movement verbs: ✗ 図書館へ本を読みます → ✓ 図書館で本を読みます",
+    examples:[
+      {japanese:"にほんへいきたいです。",reading:"Nihon e ikitai desu.",english:"I want to go to Japan.",
+       breakdown:[{word:"にほんへ",reading:"Nihon e",role:"particle",meaning:"to Japan (direction)"},{word:"いきたい",reading:"ikitai",role:"verb",meaning:"want to go"},{word:"です",reading:"desu",role:"grammar",meaning:"polite"}]},
+      {japanese:"うちへかえります。",reading:"Uchi e kaerimasu.",english:"I return home.",
+       breakdown:[{word:"うちへ",reading:"uchi e",role:"particle",meaning:"toward home"},{word:"かえります",reading:"kaerimasu",role:"verb",meaning:"return (polite)"}]},
+      {japanese:"友だちがこちらへきます。",reading:"Tomodachi ga kochira e kimasu.",english:"My friend is coming this way.",
+       breakdown:[{word:"友だちが",reading:"tomodachi ga",role:"subject",meaning:"friend (subject)"},{word:"こちらへ",reading:"kochira e",role:"particle",meaning:"toward here (direction)"},{word:"きます",reading:"kimasu",role:"verb",meaning:"come (polite)"}]},
+    ]
+  },
+  mo:{
+    pattern:"[noun] + も (replaces は, が, or を)",
+    explanation:"も means 'also' or 'too'. It replaces the particles は, が, and を to add a new item that shares the same property or action.",
+    tips:["も replaces は, が, を entirely — never combine them: ✗ 私はも → ✓ 私も","In negative sentences も means 'either' or 'neither': 私も行きません (I won't go either)."],
+    common_mistake:"Writing は も or が も together: ✗ 私はも学生です → ✓ 私も学生です",
+    examples:[
+      {japanese:"わたしも学生です。",reading:"Watashi mo gakusei desu.",english:"I am also a student.",
+       breakdown:[{word:"わたしも",reading:"watashi mo",role:"subject",meaning:"I also (topic + も)"},{word:"学生",reading:"gakusei",role:"noun",meaning:"student"},{word:"です",reading:"desu",role:"grammar",meaning:"copula"}]},
+      {japanese:"ねこもいぬもすきです。",reading:"Neko mo inu mo suki desu.",english:"I like both cats and dogs.",
+       breakdown:[{word:"ねこも",reading:"neko mo",role:"subject",meaning:"cats too"},{word:"いぬも",reading:"inu mo",role:"subject",meaning:"dogs too"},{word:"すきです",reading:"suki desu",role:"grammar",meaning:"like"}]},
+      {japanese:"田中さんもきます。",reading:"Tanaka-san mo kimasu.",english:"Tanaka-san is also coming.",
+       breakdown:[{word:"田中さんも",reading:"Tanaka-san mo",role:"subject",meaning:"Tanaka too"},{word:"きます",reading:"kimasu",role:"verb",meaning:"come (polite)"}]},
+    ]
+  },
+  no:{
+    pattern:"[noun A] + の + [noun B]  →  'A's B' or 'B of A'",
+    explanation:"の links two nouns: A の B means 'B of A' or 'B belonging to A'. It is also used for apposition (defining what something is: 友だちの田中さん — my friend Tanaka).",
+    tips:["の can stack: わたしの友だちのねこ = my friend's cat.","の can replace a noun that was mentioned: これはわたしのです (This is mine)."],
+    common_mistake:"Using の between a な-adjective and noun without な: ✗ きれいのはな → ✓ きれいなはな",
+    examples:[
+      {japanese:"これはわたしのほんです。",reading:"Kore wa watashi no hon desu.",english:"This is my book.",
+       breakdown:[{word:"これは",reading:"kore wa",role:"subject",meaning:"this (topic)"},{word:"わたしの",reading:"watashi no",role:"particle",meaning:"my (possession)"},{word:"ほん",reading:"hon",role:"noun",meaning:"book"},{word:"です",reading:"desu",role:"grammar",meaning:"copula"}]},
+      {japanese:"東京大学のせんせいです。",reading:"Tōkyō Daigaku no sensei desu.",english:"(They are) a professor at Tokyo University.",
+       breakdown:[{word:"東京大学の",reading:"Tōkyō Daigaku no",role:"particle",meaning:"of Tokyo University"},{word:"せんせい",reading:"sensei",role:"noun",meaning:"teacher/professor"},{word:"です",reading:"desu",role:"grammar",meaning:"copula"}]},
+      {japanese:"あのかばんのいろはなんですか。",reading:"Ano kaban no iro wa nan desu ka.",english:"What color is that bag?",
+       breakdown:[{word:"あのかばんの",reading:"ano kaban no",role:"particle",meaning:"that bag's"},{word:"いろは",reading:"iro wa",role:"subject",meaning:"color (topic)"},{word:"なんですか",reading:"nan desu ka",role:"grammar",meaning:"what is it?"}]},
+    ]
+  },
+  to:{
+    pattern:"[noun A] + と + [noun B]  (and, with)  |  [verb] + と + [quotation]",
+    explanation:"と connects two nouns meaning 'and' (exhaustive list) or 'with' (accompaniment). It also introduces quotations after と.",
+    tips:["と for nouns is exhaustive — it lists all items. Use や for a non-exhaustive list.","と for accompaniment: 友だちと行く (go with a friend)."],
+    common_mistake:"Using と to mean 'and' for verbs: ✗ 食べると飲む → ✓ 食べて飲む (use て-form for verb sequences)",
+    examples:[
+      {japanese:"パンとたまごをかいました。",reading:"Pan to tamago o kaimashita.",english:"I bought bread and eggs.",
+       breakdown:[{word:"パンと",reading:"pan to",role:"particle",meaning:"bread and"},{word:"たまごを",reading:"tamago o",role:"object",meaning:"eggs (object)"},{word:"かいました",reading:"kaimashita",role:"verb",meaning:"bought"}]},
+      {japanese:"友だちとえいがをみます。",reading:"Tomodachi to eiga o mimasu.",english:"I watch a movie with a friend.",
+       breakdown:[{word:"友だちと",reading:"tomodachi to",role:"particle",meaning:"with a friend"},{word:"えいがを",reading:"eiga o",role:"object",meaning:"movie (object)"},{word:"みます",reading:"mimasu",role:"verb",meaning:"watch (polite)"}]},
+      {japanese:"「ありがとう」とはなしました。",reading:"'Arigatou' to hanashimashita.",english:'I said "thank you".',
+       breakdown:[{word:"「ありがとう」と",reading:"arigatou to",role:"particle",meaning:"quotation marker"},{word:"はなしました",reading:"hanashimashita",role:"verb",meaning:"said / spoke"}]},
+    ]
+  },
+  verb_groups:{
+    pattern:"Group 1 (う-verbs) | Group 2 (る-verbs) | Group 3 (irregular: くる・する)",
+    explanation:"Japanese verbs fall into 3 groups which determine how they conjugate. Group 1 ends in a u-row sound; Group 2 ends in -いる or -える; Group 3 contains only くる and する.",
+    tips:["A quick test: if the plain form ends in -いる or -える, it's likely Group 2. But watch out! 帰る, 切る, 走る are Group 1 exceptions.","Memorise Group 3 (くる→き, する→し) — they appear everywhere."],
+    common_mistake:"Treating Group 1 -る verbs (帰る, 切る) as Group 2. Always check each verb.",
+    examples:[
+      {japanese:"まいにちはしります。(Group 1)",reading:"Mainichi hashirimasu.",english:"I run every day. (Group 1: 走る)",
+       breakdown:[{word:"まいにち",reading:"mainichi",role:"noun",meaning:"every day"},{word:"はしります",reading:"hashirimasu",role:"verb",meaning:"run (polite, Group 1 う-verb)"}]},
+      {japanese:"6時におきます。(Group 2)",reading:"Roku-ji ni okimasu.",english:"I wake up at 6. (Group 2: 起きる)",
+       breakdown:[{word:"6時に",reading:"roku-ji ni",role:"particle",meaning:"at 6 o'clock"},{word:"おきます",reading:"okimasu",role:"verb",meaning:"wake up (polite, Group 2)"}]},
+      {japanese:"友だちがきます。(Group 3)",reading:"Tomodachi ga kimasu.",english:"My friend is coming. (Group 3: くる)",
+       breakdown:[{word:"友だちが",reading:"tomodachi ga",role:"subject",meaning:"friend (subject)"},{word:"きます",reading:"kimasu",role:"verb",meaning:"come (polite, Group 3 irregular)"}]},
+    ]
+  },
+  nai_form:{
+    pattern:"Group 1: replace -う with -あない  |  Group 2: replace -る with -ない  |  Group 3: こない / しない",
+    explanation:"The ない-form is the plain negative. To make it polite add ます→ません. It expresses that an action does not or will not occur.",
+    tips:["The polite negative is simply ～ません: 食べない (plain) → 食べません (polite).","Exception: the verb ある (to exist) has ない as its negative, not あらない."],
+    common_mistake:"Using あらない for the negative of ある: ✗ 時間があらない → ✓ 時間がない",
+    examples:[
+      {japanese:"にくをたべません。",reading:"Niku o tabemasen.",english:"I don't eat meat.",
+       breakdown:[{word:"にくを",reading:"niku o",role:"object",meaning:"meat (object)"},{word:"たべません",reading:"tabemasen",role:"verb",meaning:"don't eat (polite negative)"}]},
+      {japanese:"きょうはがっこうにいかない。",reading:"Kyou wa gakkou ni ikanai.",english:"I'm not going to school today. (plain)",
+       breakdown:[{word:"きょうは",reading:"kyou wa",role:"subject",meaning:"today (topic)"},{word:"がっこうに",reading:"gakkou ni",role:"particle",meaning:"to school"},{word:"いかない",reading:"ikanai",role:"verb",meaning:"not go (plain negative)"}]},
+      {japanese:"日本語がわかりません。",reading:"Nihongo ga wakarimasen.",english:"I don't understand Japanese.",
+       breakdown:[{word:"日本語が",reading:"Nihongo ga",role:"subject",meaning:"Japanese (subject)"},{word:"わかりません",reading:"wakarimasen",role:"verb",meaning:"don't understand (polite negative)"}]},
+    ]
+  },
+  ta_form:{
+    pattern:"Group 1: same sound change as て-form but end in だ/た  |  Group 2: replace -る with -た  |  Group 3: きた / した",
+    explanation:"The た-form expresses past tense in plain speech. Polite past is ～ました. It also forms the basis of past conditionals (～たら) and the 'after doing' pattern (～た後で).",
+    tips:["The polite past is made simply with ～ました, e.g. 食べました.","た-form and て-form follow the same sound changes — learn them together."],
+    common_mistake:"Forgetting the voiced sound change for Group 1 verbs ending in ぬ/ぶ/む: 飲む→飲んだ (not 飲みた)",
+    examples:[
+      {japanese:"きのうえいがをみました。",reading:"Kinou eiga o mimashita.",english:"I watched a movie yesterday.",
+       breakdown:[{word:"きのう",reading:"kinou",role:"noun",meaning:"yesterday"},{word:"えいがを",reading:"eiga o",role:"object",meaning:"movie (object)"},{word:"みました",reading:"mimashita",role:"verb",meaning:"watched (polite past)"}]},
+      {japanese:"あさごはんをたべた。",reading:"Asagohan o tabeta.",english:"I ate breakfast. (plain)",
+       breakdown:[{word:"あさごはんを",reading:"asagohan o",role:"object",meaning:"breakfast (object)"},{word:"たべた",reading:"tabeta",role:"verb",meaning:"ate (plain past)"}]},
+      {japanese:"友だちがきました。",reading:"Tomodachi ga kimashita.",english:"My friend came.",
+       breakdown:[{word:"友だちが",reading:"tomodachi ga",role:"subject",meaning:"friend (subject)"},{word:"きました",reading:"kimashita",role:"verb",meaning:"came (polite past, Group 3)"}]},
+    ]
+  },
+  te_form:{
+    pattern:"Group 1: sound-change + て/で  |  Group 2: replace -る with -て  |  Group 3: きて / して",
+    explanation:"The て-form connects actions in sequence ('and then'), makes requests (てください), forms continuous aspect (ている), and is used in many other patterns. It is one of the most important verb forms.",
+    tips:["Remember Group 1 sound changes: う/つ/る→って, む/ぬ/ぶ→んで, く→いて, ぐ→いで, す→して.","Group 2 is always simple: just replace -る with -て."],
+    common_mistake:"Applying Group 2 conjugation to Group 1 -る verbs: ✗ 帰れて → ✓ 帰って",
+    examples:[
+      {japanese:"シャワーをあびて、朝ごはんをたべました。",reading:"Shawā o abite, asagohan o tabemashita.",english:"I took a shower and then ate breakfast.",
+       breakdown:[{word:"シャワーをあびて",reading:"shawā o abite",role:"verb",meaning:"took a shower (て-form: sequence)"},{word:"朝ごはんを",reading:"asagohan o",role:"object",meaning:"breakfast"},{word:"たべました",reading:"tabemashita",role:"verb",meaning:"ate (polite past)"}]},
+      {japanese:"ここにすわってください。",reading:"Koko ni suwatte kudasai.",english:"Please sit down here.",
+       breakdown:[{word:"ここに",reading:"koko ni",role:"particle",meaning:"here (location)"},{word:"すわって",reading:"suwatte",role:"verb",meaning:"sit (て-form)"},{word:"ください",reading:"kudasai",role:"grammar",meaning:"please (request)"}]},
+      {japanese:"てをあらってからたべます。",reading:"Te o aratte kara tabemasu.",english:"I wash my hands and then eat.",
+       breakdown:[{word:"てをあらって",reading:"te o aratte",role:"verb",meaning:"wash hands (て-form)"},{word:"から",reading:"kara",role:"grammar",meaning:"after doing"},{word:"たべます",reading:"tabemasu",role:"verb",meaning:"eat (polite)"}]},
+    ]
+  },
+  te_iru:{
+    pattern:"[verb て-form] + いる / います",
+    explanation:"ている has two main uses: (1) an ongoing action right now (running, eating), and (2) a resulting state that continues (wearing, being married, knowing).",
+    tips:["Motion verbs (行く, 来る, 帰る) + ている describe a resulting state: 行っている = 'has gone (and is away)'.","For physical appearance states use ている: 結婚している (is married), 知っている (knows)."],
+    common_mistake:"Using ている for habitual actions where English uses 'always': ✓ まいにち走っています is fine for habit.",
+    examples:[
+      {japanese:"いま雨がふっています。",reading:"Ima ame ga futte imasu.",english:"It is raining now.",
+       breakdown:[{word:"いま",reading:"ima",role:"noun",meaning:"now"},{word:"雨が",reading:"ame ga",role:"subject",meaning:"rain (subject)"},{word:"ふっています",reading:"futte imasu",role:"verb",meaning:"is falling (ongoing)"}]},
+      {japanese:"かれはめがねをかけています。",reading:"Kare wa megane o kakete imasu.",english:"He is wearing glasses. (resulting state)",
+       breakdown:[{word:"かれは",reading:"kare wa",role:"subject",meaning:"he (topic)"},{word:"めがねを",reading:"megane o",role:"object",meaning:"glasses"},{word:"かけています",reading:"kakete imasu",role:"verb",meaning:"is wearing (state)"}]},
+      {japanese:"わたしは日本語をべんきょうしています。",reading:"Watashi wa Nihongo o benkyou shite imasu.",english:"I am studying Japanese. (habit/ongoing)",
+       breakdown:[{word:"わたしは",reading:"watashi wa",role:"subject",meaning:"I (topic)"},{word:"日本語を",reading:"Nihongo o",role:"object",meaning:"Japanese"},{word:"べんきょうしています",reading:"benkyou shite imasu",role:"verb",meaning:"am studying (ている)"}]},
+    ]
+  },
+  tai:{
+    pattern:"[verb stem] + たい + です",
+    explanation:"たい expresses the speaker's desire to do something — 'want to do'. It attaches to the verb stem (the ます-form minus ます) and conjugates like an い-adjective.",
+    tips:["たい describes only the speaker's desires. To ask about someone else's desire use ～たいですか or ～たがっています.","The object of たい can take either を or が: 水をのみたい or 水がのみたい."],
+    common_mistake:"Adding たい directly to the dictionary form: ✗ 食べるたい → ✓ 食べたい",
+    examples:[
+      {japanese:"日本にいきたいです。",reading:"Nihon ni ikitai desu.",english:"I want to go to Japan.",
+       breakdown:[{word:"日本に",reading:"Nihon ni",role:"particle",meaning:"to Japan"},{word:"いきたい",reading:"ikitai",role:"verb",meaning:"want to go (たい-form)"},{word:"です",reading:"desu",role:"grammar",meaning:"polite"}]},
+      {japanese:"なにがたべたいですか。",reading:"Nani ga tabetai desu ka.",english:"What do you want to eat?",
+       breakdown:[{word:"なにが",reading:"nani ga",role:"subject",meaning:"what"},{word:"たべたい",reading:"tabetai",role:"verb",meaning:"want to eat"},{word:"ですか",reading:"desu ka",role:"grammar",meaning:"polite question"}]},
+      {japanese:"はやくうちにかえりたい。",reading:"Hayaku uchi ni kaeritai.",english:"I want to go home quickly.",
+       breakdown:[{word:"はやく",reading:"hayaku",role:"adjective",meaning:"quickly (adverb form)"},{word:"うちに",reading:"uchi ni",role:"particle",meaning:"to home"},{word:"かえりたい",reading:"kaeritai",role:"verb",meaning:"want to return"}]},
+    ]
+  },
+  mashou:{
+    pattern:"[verb stem] + ましょう (let's)  |  [verb stem] + ましょうか (shall we?)",
+    explanation:"ましょう is used to propose doing something together — 'let's do'. ましょうか is a softer suggestion — 'shall we do?' or 'shall I do (for you)?'.",
+    tips:["ませんか is another way to invite: ～ませんか (Won't you...?) is slightly more polite than ましょう.","ましょうか can also offer help: 荷物を持ちましょうか (Shall I carry your bags?)"],
+    common_mistake:"Using ましょう as a question without か: ✗ 行きましょう？ (sounds like a command) → ✓ 行きましょうか (softer suggestion)",
+    examples:[
+      {japanese:"いっしょにたべましょう。",reading:"Issho ni tabemashou.",english:"Let's eat together.",
+       breakdown:[{word:"いっしょに",reading:"issho ni",role:"noun",meaning:"together"},{word:"たべましょう",reading:"tabemashou",role:"verb",meaning:"let's eat"}]},
+      {japanese:"えいがをみましょうか。",reading:"Eiga o mimashou ka.",english:"Shall we watch a movie?",
+       breakdown:[{word:"えいがを",reading:"eiga o",role:"object",meaning:"movie (object)"},{word:"みましょうか",reading:"mimashou ka",role:"verb",meaning:"shall we watch?"}]},
+      {japanese:"すこしやすみませんか。",reading:"Sukoshi yasumimasen ka.",english:"Why don't we rest a little?",
+       breakdown:[{word:"すこし",reading:"sukoshi",role:"noun",meaning:"a little"},{word:"やすみませんか",reading:"yasumimasen ka",role:"verb",meaning:"won't you rest? (polite invitation)"}]},
+    ]
+  },
+  te_try:{
+    pattern:"[verb て-form] + みます / みてください",
+    explanation:"てみる means to try doing something — often for the first time or as an experiment. It is literally 'do and see (what happens)'.",
+    tips:["Use てみる when attempting something new: この料理を食べてみてください (Please try eating this dish).","It can be combined with たい: 食べてみたい (I want to try eating it)."],
+    common_mistake:"Using ためす (to attempt/test) when てみる is more natural for trying out experiences.",
+    examples:[
+      {japanese:"この料理をたべてみてください。",reading:"Kono ryouri o tabete mite kudasai.",english:"Please try eating this dish.",
+       breakdown:[{word:"この料理を",reading:"kono ryouri o",role:"object",meaning:"this dish"},{word:"たべてみて",reading:"tabete mite",role:"verb",meaning:"try eating (てみる)"},{word:"ください",reading:"kudasai",role:"grammar",meaning:"please"}]},
+      {japanese:"日本語ではなしてみます。",reading:"Nihongo de hanashite mimasu.",english:"I will try speaking in Japanese.",
+       breakdown:[{word:"日本語で",reading:"Nihongo de",role:"particle",meaning:"in Japanese (means)"},{word:"はなしてみます",reading:"hanashite mimasu",role:"verb",meaning:"will try speaking (てみる)"}]},
+      {japanese:"あのみせにいってみました。",reading:"Ano mise ni itte mimashita.",english:"I tried going to that shop.",
+       breakdown:[{word:"あのみせに",reading:"ano mise ni",role:"particle",meaning:"to that shop"},{word:"いってみました",reading:"itte mimashita",role:"verb",meaning:"tried going (てみた past)"}]},
+    ]
+  },
+  te_kudasai:{
+    pattern:"[verb て-form] + ください",
+    explanation:"て-form + ください is a polite request meaning 'please do ~'. It is one of the most commonly used patterns in everyday Japanese.",
+    tips:["To make a negative request (please don't ~) use: ないでください.","In very polite situations you can say てくださいませんか (Would you please...?)."],
+    common_mistake:"Using the dictionary form before ください: ✗ 食べるください → ✓ 食べてください",
+    examples:[
+      {japanese:"ここになまえをかいてください。",reading:"Koko ni namae o kaite kudasai.",english:"Please write your name here.",
+       breakdown:[{word:"ここに",reading:"koko ni",role:"particle",meaning:"here"},{word:"なまえを",reading:"namae o",role:"object",meaning:"name (object)"},{word:"かいてください",reading:"kaite kudasai",role:"verb",meaning:"please write"}]},
+      {japanese:"ゆっくりはなしてください。",reading:"Yukkuri hanashite kudasai.",english:"Please speak slowly.",
+       breakdown:[{word:"ゆっくり",reading:"yukkuri",role:"adjective",meaning:"slowly"},{word:"はなしてください",reading:"hanashite kudasai",role:"verb",meaning:"please speak"}]},
+      {japanese:"ドアをしめないでください。",reading:"Doa o shimenaide kudasai.",english:"Please don't close the door.",
+       breakdown:[{word:"ドアを",reading:"doa o",role:"object",meaning:"door (object)"},{word:"しめないで",reading:"shimenaide",role:"verb",meaning:"don't close (negative て)"},{word:"ください",reading:"kudasai",role:"grammar",meaning:"please"}]},
+    ]
+  },
+  te_mo_ii:{
+    pattern:"[verb て-form] + もいいですか  (may I…?)  |  [verb て-form] + もいいです (you may…)",
+    explanation:"てもいいですか asks for permission to do something. The answer てもいいです grants permission. It is one of the most practical patterns for N5 learners.",
+    tips:["To deny permission answer: ～てはいけません or ちょっと… (a gentle 'no').","You can also ask about objects: このペンを使ってもいいですか (May I use this pen?)"],
+    common_mistake:"Forgetting the も: ✗ 入っていいですか → ✓ 入ってもいいですか",
+    examples:[
+      {japanese:"ここにすわってもいいですか。",reading:"Koko ni suwatte mo ii desu ka.",english:"May I sit here?",
+       breakdown:[{word:"ここに",reading:"koko ni",role:"particle",meaning:"here"},{word:"すわって",reading:"suwatte",role:"verb",meaning:"sit (て-form)"},{word:"もいいですか",reading:"mo ii desu ka",role:"grammar",meaning:"is it okay? (permission)"}]},
+      {japanese:"まどをあけてもいいですか。",reading:"Mado o akete mo ii desu ka.",english:"May I open the window?",
+       breakdown:[{word:"まどを",reading:"mado o",role:"object",meaning:"window"},{word:"あけても",reading:"akete mo",role:"verb",meaning:"open (て-form) + even if"},{word:"いいですか",reading:"ii desu ka",role:"grammar",meaning:"is it alright?"}]},
+      {japanese:"ここでしゃしんをとってもいいですか。",reading:"Koko de shashin o totte mo ii desu ka.",english:"May I take a photo here?",
+       breakdown:[{word:"ここで",reading:"koko de",role:"particle",meaning:"here (location)"},{word:"しゃしんを",reading:"shashin o",role:"object",meaning:"photo"},{word:"とってもいいですか",reading:"totte mo ii desu ka",role:"grammar",meaning:"is it okay to take?"}]},
+    ]
+  },
+  te_wa_ikenai:{
+    pattern:"[verb て-form] + はいけません / はいけない",
+    explanation:"てはいけません means 'must not do ~' or 'it is not allowed to do ~'. It expresses prohibition. The plain form てはいけない is used in casual speech.",
+    tips:["てはいけません is stronger than しないでください (please don't). Use it for rules and prohibitions.","ては can contract to ちゃ in casual speech: 食べちゃいけない."],
+    common_mistake:"Confusing with てもいいですか (permission): いけません = prohibited, いいですか = asking permission.",
+    examples:[
+      {japanese:"ここでタバコをすってはいけません。",reading:"Koko de tabako o sutte wa ikemasen.",english:"You must not smoke here.",
+       breakdown:[{word:"ここで",reading:"koko de",role:"particle",meaning:"here"},{word:"タバコを",reading:"tabako o",role:"object",meaning:"cigarette"},{word:"すってはいけません",reading:"sutte wa ikemasen",role:"grammar",meaning:"must not smoke"}]},
+      {japanese:"じゅぎょうちゅうにはなしてはいけません。",reading:"Jugyouchuu ni hanashite wa ikemasen.",english:"You must not talk during class.",
+       breakdown:[{word:"じゅぎょうちゅうに",reading:"jugyouchuu ni",role:"particle",meaning:"during class"},{word:"はなしてはいけません",reading:"hanashite wa ikemasen",role:"grammar",meaning:"must not talk"}]},
+      {japanese:"しゃしんをとってはいけません。",reading:"Shashin o totte wa ikemasen.",english:"You must not take photos.",
+       breakdown:[{word:"しゃしんを",reading:"shashin o",role:"object",meaning:"photos"},{word:"とってはいけません",reading:"totte wa ikemasen",role:"grammar",meaning:"must not take"}]},
+    ]
+  },
+  i_adj:{
+    pattern:"Present: [い-adj] + です  |  Past: [stem] + かったです  |  Negative: [stem] + くないです",
+    explanation:"い-adjectives end in い and conjugate directly. Remove い to get the stem, then add the appropriate ending. They do not need な before a noun.",
+    tips:["The い-adjective いい (good) is irregular: past → よかった, negative → よくない.","い-adjectives directly precede nouns: 高い山 (a tall mountain) — no connector needed."],
+    common_mistake:"Treating いい as regular: ✗ いかった → ✓ よかった  |  ✗ いくない → ✓ よくない",
+    examples:[
+      {japanese:"きょうはさむいです。",reading:"Kyou wa samui desu.",english:"It is cold today.",
+       breakdown:[{word:"きょうは",reading:"kyou wa",role:"subject",meaning:"today (topic)"},{word:"さむい",reading:"samui",role:"adjective",meaning:"cold"},{word:"です",reading:"desu",role:"grammar",meaning:"polite copula"}]},
+      {japanese:"きのうはあつかったです。",reading:"Kinou wa atsukatta desu.",english:"It was hot yesterday.",
+       breakdown:[{word:"きのうは",reading:"kinou wa",role:"subject",meaning:"yesterday (topic)"},{word:"あつかった",reading:"atsukatta",role:"adjective",meaning:"was hot (past)"},{word:"です",reading:"desu",role:"grammar",meaning:"polite"}]},
+      {japanese:"このえいがはおもしろくないです。",reading:"Kono eiga wa omoshirokunai desu.",english:"This movie is not interesting.",
+       breakdown:[{word:"このえいがは",reading:"kono eiga wa",role:"subject",meaning:"this movie (topic)"},{word:"おもしろくない",reading:"omoshirokunai",role:"adjective",meaning:"not interesting (negative)"},{word:"です",reading:"desu",role:"grammar",meaning:"polite"}]},
+    ]
+  },
+  na_adj:{
+    pattern:"Noun/predicate: [な-adj] + な + [noun]  |  Predicate: [な-adj] + です  |  Past: [な-adj] + でした",
+    explanation:"な-adjectives are essentially nouns that describe quality. Before a noun they need な; as predicates they use です directly. They do NOT end in い (exceptions: きれい, きらい, ゆうめい are な-adjectives despite ending in い).",
+    tips:["な-adjectives use な before nouns (静かな部屋) and です as predicate (静かです).","Negation: ～ではありません or ～じゃないです."],
+    common_mistake:"Using い-adjective conjugation on な-adjectives: ✗ しずかかった → ✓ しずかでした",
+    examples:[
+      {japanese:"あのこうえんはしずかです。",reading:"Ano kouen wa shizuka desu.",english:"That park is quiet.",
+       breakdown:[{word:"あのこうえんは",reading:"ano kouen wa",role:"subject",meaning:"that park (topic)"},{word:"しずか",reading:"shizuka",role:"adjective",meaning:"quiet (な-adj)"},{word:"です",reading:"desu",role:"grammar",meaning:"polite copula"}]},
+      {japanese:"かのじょはげんきなひとです。",reading:"Kanojo wa genki na hito desu.",english:"She is an energetic person.",
+       breakdown:[{word:"かのじょは",reading:"kanojo wa",role:"subject",meaning:"she (topic)"},{word:"げんきな",reading:"genki na",role:"adjective",meaning:"energetic + な"},{word:"ひと",reading:"hito",role:"noun",meaning:"person"},{word:"です",reading:"desu",role:"grammar",meaning:"copula"}]},
+      {japanese:"このへやはきれいじゃないです。",reading:"Kono heya wa kirei ja nai desu.",english:"This room is not clean.",
+       breakdown:[{word:"このへやは",reading:"kono heya wa",role:"subject",meaning:"this room (topic)"},{word:"きれいじゃない",reading:"kirei ja nai",role:"adjective",meaning:"not clean/pretty (negative)"},{word:"です",reading:"desu",role:"grammar",meaning:"polite"}]},
+    ]
+  },
+  aru_iru:{
+    pattern:"[inanimate noun] が + あります  |  [animate noun] が + います",
+    explanation:"あります expresses the existence of inanimate things (objects, plants, abstract things). います expresses the existence of animate things (people, animals). Both mean 'there is/are' or 'to have'.",
+    tips:["Plants use あります (they don't move themselves); robots and dolls use います (by social convention).","Location + に + noun + が + あります/います is the standard formula for location."],
+    common_mistake:"Using あります for people or animals: ✗ 先生があります → ✓ 先生がいます",
+    examples:[
+      {japanese:"つくえのうえにほんがあります。",reading:"Tsukue no ue ni hon ga arimasu.",english:"There is a book on the desk.",
+       breakdown:[{word:"つくえのうえに",reading:"tsukue no ue ni",role:"particle",meaning:"on the desk"},{word:"ほんが",reading:"hon ga",role:"subject",meaning:"book (subject)"},{word:"あります",reading:"arimasu",role:"verb",meaning:"exists (inanimate)"}]},
+      {japanese:"こうえんにこどもがいます。",reading:"Kouen ni kodomo ga imasu.",english:"There are children in the park.",
+       breakdown:[{word:"こうえんに",reading:"kouen ni",role:"particle",meaning:"in the park"},{word:"こどもが",reading:"kodomo ga",role:"subject",meaning:"children (subject)"},{word:"います",reading:"imasu",role:"verb",meaning:"exist (animate)"}]},
+      {japanese:"わたしにはいもうとがいます。",reading:"Watashi ni wa imouto ga imasu.",english:"I have a younger sister.",
+       breakdown:[{word:"わたしには",reading:"watashi ni wa",role:"subject",meaning:"as for me"},{word:"いもうとが",reading:"imouto ga",role:"subject",meaning:"younger sister"},{word:"います",reading:"imasu",role:"verb",meaning:"exists / have"}]},
+    ]
+  },
+  kono_sono:{
+    pattern:"この (this near me) / その (that near you) / あの (that over there) / どの (which?)",
+    explanation:"The こそあど series points to things based on distance from the speaker and listener. この/その/あの come before nouns. これ/それ/あれ/どれ stand alone as pronouns.",
+    tips:["この, その, あの must be followed by a noun. これ, それ, あれ stand alone: この本 (this book) vs これは本です (this is a book).","In past shared experience, あの is used: あの映画 (that movie [we both saw])."],
+    common_mistake:"Using この where これ is needed (or vice versa): ✗ このは本です → ✓ これは本です / ✓ この本です",
+    examples:[
+      {japanese:"このかばんはいくらですか。",reading:"Kono kaban wa ikura desu ka.",english:"How much is this bag?",
+       breakdown:[{word:"この",reading:"kono",role:"grammar",meaning:"this (near speaker)"},{word:"かばんは",reading:"kaban wa",role:"subject",meaning:"bag (topic)"},{word:"いくらですか",reading:"ikura desu ka",role:"grammar",meaning:"how much?"}]},
+      {japanese:"それはわたしのかさです。",reading:"Sore wa watashi no kasa desu.",english:"That (near you) is my umbrella.",
+       breakdown:[{word:"それは",reading:"sore wa",role:"subject",meaning:"that near you (topic)"},{word:"わたしの",reading:"watashi no",role:"particle",meaning:"my"},{word:"かさ",reading:"kasa",role:"noun",meaning:"umbrella"},{word:"です",reading:"desu",role:"grammar",meaning:"copula"}]},
+      {japanese:"あのたてものはなんですか。",reading:"Ano tatemono wa nan desu ka.",english:"What is that building over there?",
+       breakdown:[{word:"あの",reading:"ano",role:"grammar",meaning:"that over there"},{word:"たてものは",reading:"tatemono wa",role:"subject",meaning:"building (topic)"},{word:"なんですか",reading:"nan desu ka",role:"grammar",meaning:"what is it?"}]},
+    ]
+  },
+  counters:{
+    pattern:"[number] + [counter]  e.g. 一枚 (1 flat thing), 一本 (1 long thing), 一匹 (1 small animal)",
+    explanation:"Japanese uses special counting words (助数詞) that depend on the shape or category of the object. Common N5 counters: 枚 (flat), 本 (long/cylindrical), 冊 (books), 匹 (small animals), 台 (machines), 個 (general small items), 人 (people), 杯 (cups/bowls).",
+    tips:["一 (one) and 六 (six) with 本 are irregular: 一本 (ippon), 六本 (roppon).","Learn the most common counters first: 一つ～十 (general counting) works when you don't know the specific counter."],
+    common_mistake:"Using 人 for animals: ✗ 犬が三人います → ✓ 犬が三匹います",
+    examples:[
+      {japanese:"りんごを三つかいました。",reading:"Ringo o mittsu kaimashita.",english:"I bought three apples.",
+       breakdown:[{word:"りんごを",reading:"ringo o",role:"object",meaning:"apples"},{word:"三つ",reading:"mittsu",role:"noun",meaning:"three (general counter)"},{word:"かいました",reading:"kaimashita",role:"verb",meaning:"bought"}]},
+      {japanese:"えんぴつが二本あります。",reading:"Enpitsu ga nihon arimasu.",english:"There are two pencils.",
+       breakdown:[{word:"えんぴつが",reading:"enpitsu ga",role:"subject",meaning:"pencils"},{word:"二本",reading:"nihon",role:"noun",meaning:"two (long/cylindrical counter)"},{word:"あります",reading:"arimasu",role:"verb",meaning:"there are"}]},
+      {japanese:"がくせいが十人います。",reading:"Gakusei ga juunin imasu.",english:"There are ten students.",
+       breakdown:[{word:"がくせいが",reading:"gakusei ga",role:"subject",meaning:"students"},{word:"十人",reading:"juunin",role:"noun",meaning:"ten people (人 counter)"},{word:"います",reading:"imasu",role:"verb",meaning:"there are"}]},
+    ]
+  },
+  time_expr:{
+    pattern:"[time word] + に (specific) / [time word] + no particle (relative)",
+    explanation:"Japanese has a rich set of time expressions. Absolute times (3時, 月曜日) take に. Relative expressions (今日, 明日, 来週, 毎日) do NOT take に.",
+    tips:["Memorise: 今日・明日・あさって・昨日・おととい need no particle.","For days of the week + に: 月曜日に (on Monday)."],
+    common_mistake:"Adding に to relative time words: ✗ 今日に行きます → ✓ 今日行きます",
+    examples:[
+      {japanese:"あしたともだちにあいます。",reading:"Ashita tomodachi ni aimasu.",english:"Tomorrow I will meet a friend.",
+       breakdown:[{word:"あした",reading:"ashita",role:"noun",meaning:"tomorrow (no に needed)"},{word:"ともだちに",reading:"tomodachi ni",role:"particle",meaning:"a friend (に = target)"},{word:"あいます",reading:"aimasu",role:"verb",meaning:"meet (polite)"}]},
+      {japanese:"まいあさ7時におきます。",reading:"Maiasa shichi-ji ni okimasu.",english:"I wake up at 7 every morning.",
+       breakdown:[{word:"まいあさ",reading:"maiasa",role:"noun",meaning:"every morning"},{word:"7時に",reading:"shichi-ji ni",role:"particle",meaning:"at 7 o'clock (に with specific time)"},{word:"おきます",reading:"okimasu",role:"verb",meaning:"wake up"}]},
+      {japanese:"らいしゅうしけんがあります。",reading:"Raishuu shiken ga arimasu.",english:"There is an exam next week.",
+       breakdown:[{word:"らいしゅう",reading:"raishuu",role:"noun",meaning:"next week (no に)"},{word:"しけんが",reading:"shiken ga",role:"subject",meaning:"exam"},{word:"あります",reading:"arimasu",role:"verb",meaning:"there is"}]},
+    ]
+  },
+  yori_hou:{
+    pattern:"A + は + B + より + [adjective]  |  A と B では、A の ほうが + [adjective]",
+    explanation:"より means 'more than' or 'compared to'. ほうが emphasises the preferred / more-extreme side. Together they form comparisons between two items.",
+    tips:["The basic formula: Aはより～ → 'A is more ~ than B': 東京は大阪より大きい.","To ask which is more ~: AとBではどちらのほうが～ですか."],
+    common_mistake:"Reversing the comparison: ✗ 大阪は東京より大きい (if Tokyo is bigger) → ✓ 東京は大阪より大きい",
+    examples:[
+      {japanese:"東京は大阪よりおおきいです。",reading:"Toukyou wa Osaka yori ookii desu.",english:"Tokyo is bigger than Osaka.",
+       breakdown:[{word:"東京は",reading:"Toukyou wa",role:"subject",meaning:"Tokyo (topic)"},{word:"大阪より",reading:"Osaka yori",role:"particle",meaning:"than Osaka"},{word:"おおきい",reading:"ookii",role:"adjective",meaning:"bigger"},{word:"です",reading:"desu",role:"grammar",meaning:"polite"}]},
+      {japanese:"バスよりでんしゃのほうがはやいです。",reading:"Basu yori densha no hou ga hayai desu.",english:"The train is faster than the bus.",
+       breakdown:[{word:"バスより",reading:"basu yori",role:"particle",meaning:"than the bus"},{word:"でんしゃのほうが",reading:"densha no hou ga",role:"grammar",meaning:"the train side (ほうが)"},{word:"はやい",reading:"hayai",role:"adjective",meaning:"fast"},{word:"です",reading:"desu",role:"grammar",meaning:"polite"}]},
+      {japanese:"夏とふゆではどちらのほうがすきですか。",reading:"Natsu to fuyu de wa dochira no hou ga suki desu ka.",english:"Between summer and winter, which do you prefer?",
+       breakdown:[{word:"夏とふゆでは",reading:"natsu to fuyu de wa",role:"particle",meaning:"between summer and winter"},{word:"どちらのほうが",reading:"dochira no hou ga",role:"grammar",meaning:"which side (comparison question)"},{word:"すきですか",reading:"suki desu ka",role:"grammar",meaning:"do you like?"}]},
+    ]
+  },
+  kara_b:{
+    pattern:"[reason clause (plain)] + から + [result]  |  [reason clause (plain)] + ので + [result]",
+    explanation:"から and ので both mean 'because / so'. から is more direct and slightly casual; ので is softer and more formal/polite, implying the reason is objective.",
+    tips:["ので sounds more polite and is preferred in formal contexts or when explaining to a superior.","から can also mean 'from' (place/time): 9時から (from 9 o'clock)."],
+    common_mistake:"Forgetting to use plain form before から/ので in formal sentences: ✗ 食べますから → ✓ 食べるから (plain) → 食べますから is actually OK but sounds stiff.",
+    examples:[
+      {japanese:"あめがふっているから、でかけません。",reading:"Ame ga futte iru kara, dekakemasen.",english:"Because it is raining, I won't go out.",
+       breakdown:[{word:"あめがふっているから",reading:"ame ga futte iru kara",role:"grammar",meaning:"because it is raining"},{word:"でかけません",reading:"dekakemasen",role:"verb",meaning:"won't go out"}]},
+      {japanese:"つかれたので、はやくねます。",reading:"Tsukareta node, hayaku nemasu.",english:"Because I'm tired, I'll go to sleep early.",
+       breakdown:[{word:"つかれたので",reading:"tsukareta node",role:"grammar",meaning:"because I'm tired (ので, polite)"},{word:"はやくねます",reading:"hayaku nemasu",role:"verb",meaning:"will sleep early"}]},
+      {japanese:"やすいから、このみせがすきです。",reading:"Yasui kara, kono mise ga suki desu.",english:"I like this shop because it is cheap.",
+       breakdown:[{word:"やすいから",reading:"yasui kara",role:"grammar",meaning:"because it is cheap"},{word:"このみせが",reading:"kono mise ga",role:"subject",meaning:"this shop"},{word:"すきです",reading:"suki desu",role:"grammar",meaning:"like"}]},
+    ]
+  },
+  ga_but:{
+    pattern:"[clause 1] + が + [clause 2 (contrasting)]",
+    explanation:"が as a conjunction (not a subject marker) connects two clauses with a contrast — 'but' or 'however'. It is softer than でも and is often used to introduce a statement before adding a contrasting point.",
+    tips:["が as a conjunction always connects full clauses. でも starts a new sentence.","が can also soften a request: すみませんが… (Excuse me, but…)"],
+    common_mistake:"Confusing subject-marker が with conjunction が. Context and clause structure reveal which is which.",
+    examples:[
+      {japanese:"日本語はむずかしいですが、おもしろいです。",reading:"Nihongo wa muzukashii desu ga, omoshiroi desu.",english:"Japanese is difficult, but it's interesting.",
+       breakdown:[{word:"日本語はむずかしいですが",reading:"Nihongo wa muzukashii desu ga",role:"grammar",meaning:"Japanese is difficult, but…"},{word:"おもしろいです",reading:"omoshiroi desu",role:"adjective",meaning:"interesting (contrasting clause)"}]},
+      {japanese:"このホテルはたかいですが、きれいです。",reading:"Kono hoteru wa takai desu ga, kirei desu.",english:"This hotel is expensive, but it's beautiful.",
+       breakdown:[{word:"このホテルはたかいですが",reading:"kono hoteru wa takai desu ga",role:"grammar",meaning:"this hotel is expensive, but…"},{word:"きれいです",reading:"kirei desu",role:"adjective",meaning:"beautiful / clean"}]},
+      {japanese:"いきたいですが、じかんがありません。",reading:"Ikitai desu ga, jikan ga arimasen.",english:"I want to go, but I don't have time.",
+       breakdown:[{word:"いきたいですが",reading:"ikitai desu ga",role:"grammar",meaning:"I want to go, but…"},{word:"じかんが",reading:"jikan ga",role:"subject",meaning:"time"},{word:"ありません",reading:"arimasen",role:"verb",meaning:"there isn't"}]},
+    ]
+  },
+  mae_ato:{
+    pattern:"[noun の / verb dictionary form] + 前に (before ~)  |  [verb た-form] + 後で (after ~)",
+    explanation:"〜の前に / 〜前に expresses 'before doing something'. 〜た後で expresses 'after having done something'. The verb before 前に is always in dictionary (plain non-past) form; before 後で it is always in た-form.",
+    tips:["前に always takes dictionary form (non-past): 食べる前に (before eating).","後で always takes た-form (completed): 食べた後で (after eating)."],
+    common_mistake:"Using た-form before 前に: ✗ 食べた前に → ✓ 食べる前に",
+    examples:[
+      {japanese:"ねる前にはをみがきます。",reading:"Neru mae ni ha o migakimasu.",english:"I brush my teeth before going to sleep.",
+       breakdown:[{word:"ねる前に",reading:"neru mae ni",role:"grammar",meaning:"before sleeping (dictionary + 前に)"},{word:"はを",reading:"ha o",role:"object",meaning:"teeth"},{word:"みがきます",reading:"migakimasu",role:"verb",meaning:"brush (polite)"}]},
+      {japanese:"しゅくだいをしたあとで、テレビをみます。",reading:"Shukudai o shita ato de, terebi o mimasu.",english:"After doing homework, I watch TV.",
+       breakdown:[{word:"しゅくだいをしたあとで",reading:"shukudai o shita ato de",role:"grammar",meaning:"after doing homework (た-form + 後で)"},{word:"テレビを",reading:"terebi o",role:"object",meaning:"TV"},{word:"みます",reading:"mimasu",role:"verb",meaning:"watch"}]},
+      {japanese:"食事の前に、てをあらってください。",reading:"Shokuji no mae ni, te o aratte kudasai.",english:"Please wash your hands before the meal.",
+       breakdown:[{word:"食事の前に",reading:"shokuji no mae ni",role:"grammar",meaning:"before the meal (noun + の前に)"},{word:"てをあらって",reading:"te o aratte",role:"verb",meaning:"wash hands (て-form)"},{word:"ください",reading:"kudasai",role:"grammar",meaning:"please"}]},
+    ]
+  },
+};
+
+// ─────────────────────────────────────────
+// TOPIC LIST
+// ─────────────────────────────────────────
+const TOPICS = [
+  {cat:'Sentence Basics',tag:'core',items:[
+    {id:'desu_masu',jp:'です・ます',en:'Polite forms (です / ます)'},
+    {id:'ka_q',jp:'か',en:'Question marker (か)'},
+    {id:'ne_yo',jp:'ね・よ',en:'Sentence-ending particles (ね / よ)'},
+  ]},
+  {cat:'Particles',tag:'particle',items:[
+    {id:'wa',jp:'は',en:'Topic marker (は)'},
+    {id:'ga',jp:'が',en:'Subject marker (が)'},
+    {id:'wo',jp:'を',en:'Object marker (を)'},
+    {id:'ni',jp:'に',en:'に — direction, time, location'},
+    {id:'de',jp:'で',en:'で — place of action / means'},
+    {id:'he',jp:'へ',en:'へ — direction of movement'},
+    {id:'mo',jp:'も',en:'も — also / too'},
+    {id:'no',jp:'の',en:'の — possession & noun linking'},
+    {id:'to',jp:'と',en:'と — and / together with'},
+  ]},
+  {cat:'Verb Forms',tag:'verb',items:[
+    {id:'verb_groups',jp:'動詞グループ',en:'Verb groups 1, 2 & 3'},
+    {id:'nai_form',jp:'ない形',en:'Negative form (ない)'},
+    {id:'ta_form',jp:'た形',en:'Past tense (た-form)'},
+    {id:'te_form',jp:'て形',en:'て-form — sequential actions'},
+    {id:'te_iru',jp:'ている',en:'ている — ongoing / habitual'},
+    {id:'tai',jp:'たい',en:'たい — want to do'},
+    {id:'mashou',jp:'ましょう',en:'ましょう / ませんか — suggestions'},
+    {id:'te_try',jp:'てみます',en:'てみます — try doing'},
+  ]},
+  {cat:'Requests & Permission',tag:'pattern',items:[
+    {id:'te_kudasai',jp:'てください',en:'てください — please do…'},
+    {id:'te_mo_ii',jp:'てもいいですか',en:'てもいいですか — may I…?'},
+    {id:'te_wa_ikenai',jp:'てはいけません',en:'てはいけません — must not…'},
+  ]},
+  {cat:'Adjectives',tag:'adj',items:[
+    {id:'i_adj',jp:'い形容詞',en:'い-adjectives — conjugation'},
+    {id:'na_adj',jp:'な形容詞',en:'な-adjectives — conjugation'},
+  ]},
+  {cat:'Nouns & Existence',tag:'core',items:[
+    {id:'aru_iru',jp:'ある・いる',en:'ある / いる — existence verbs'},
+    {id:'kono_sono',jp:'こそあど',en:'Demonstratives (この・その・あの)'},
+    {id:'counters',jp:'助数詞',en:'Numbers & counters'},
+    {id:'time_expr',jp:'時間表現',en:'Time expressions (今日、明日、来週…)'},
+  ]},
+  {cat:'Sentence Patterns',tag:'pattern',items:[
+    {id:'yori_hou',jp:'より・ほうが',en:'ほうが / より — comparisons'},
+    {id:'kara_b',jp:'から・ので',en:'から / ので — because / so'},
+    {id:'ga_but',jp:'が（逆接）',en:'が — but / however'},
+    {id:'mae_ato',jp:'前・後',en:'〜の前に / 〜た後で — before & after'},
+  ]},
+];
+
+const TAG_STYLE={core:'background:#F0FDFA;color:#0F766E',particle:'background:#FFFBEB;color:#B45309',verb:'background:#F0FDF4;color:#15803D',adj:'background:#F5F3FF;color:#6D28D9',pattern:'background:#FEF2F2;color:#991B1B'};
+const ROLE_CLS={particle:'r-particle',verb:'r-verb',grammar:'r-grammar',noun:'r-noun',subject:'r-subject',object:'r-object',adjective:'r-adjective'};
+
+let curTopic=null,curMode='learn';
+let completedTopics=JSON.parse(localStorage.getItem('n5_done')||'[]');
+let qz={data:null,done:false,score:0,total:0,chosen:-1,right:false};
+let bd={data:null,tiles:[],ans:[],checked:false,correct:false};
+let jpVoice=null;
+
+if(typeof speechSynthesis!=='undefined'){
+  const lv=()=>{const vs=speechSynthesis.getVoices();jpVoice=vs.find(v=>v.lang==='ja-JP')||vs.find(v=>v.lang.startsWith('ja'))||null;};
+  lv();speechSynthesis.onvoiceschanged=lv;
+}
+function speak(text,bid,e){
+  if(e)e.stopPropagation();
+  if(typeof speechSynthesis==='undefined')return;
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang='ja-JP';if(jpVoice)u.voice=jpVoice;u.rate=0.85;
+  if(bid){const b=document.getElementById(bid);if(b){b.classList.add('on');u.onend=u.onerror=()=>b.classList.remove('on');}}
+  speechSynthesis.speak(u);
+}
+function spk(text,id){return`<button class="spk" id="${id}" onclick="speak('${text.replace(/'/g,"\\'")}','${id}',event)" title="Listen">▶</button>`;}
+
+async function callAI(system,user){
+  const res=await fetch('/.netlify/functions/ai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1800,system,messages:[{role:'user',content:user}]})});
+  const d=await res.json();
+  if(d.error)throw new Error(d.error.message||d.error);
+  const txt=d.content.map(b=>b.text||'').join('');
+  return JSON.parse(txt.replace(/```json\n?|```\n?/g,'').trim());
+}
+
+const SYS_QUIZ=`You are a Japanese language teacher writing JLPT N5 quiz questions for beginners. Return ONLY valid JSON — no markdown, no extra text.
+Schema: {"japanese":"sentence with ___ for blank","reading":"reading with ___","english":"English translation","choices":["a","b","c","d"],"correct_index":0,"explanation":"Why correct; why others wrong."}
+4 plausible choices, one correct. Short choices (1-5 chars). N5 only.`;
+
+const SYS_BUILD=`You are a Japanese language teacher creating sentence-building exercises for JLPT N5. Return ONLY valid JSON — no markdown, no extra text.
+Schema: {"english":"English to translate","hint":"grammar structure hint","tiles":[{"id":0,"jp":"word","reading":"reading","is_distractor":false}],"correct_order":[0,2,1],"full_japanese":"complete sentence","reading":"full reading","explanation":"brief grammar note"}
+6-8 tiles, exactly 2 distractors (is_distractor:true). correct_order lists non-distractor ids in correct sequence. N5 only.`;
+
+function getTopicInfo(id){for(const cat of TOPICS){const t=cat.items.find(x=>x.id===id);if(t)return{...t,cat:cat.cat,tag:cat.tag};}}
+function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');}
+
+function buildSidebar(){
+  const total=TOPICS.reduce((n,c)=>n+c.items.length,0);
+  document.getElementById('sidebar').innerHTML=TOPICS.map(cat=>`
+    <div class="sb-section">
+      <div class="sb-cat">${cat.cat}</div>
+      ${cat.items.map(t=>{
+        const done=completedTopics.includes(t.id);
+        return`<button class="sb-btn ${curTopic===t.id?'on':''}" onclick="pickTopic('${t.id}')">
+          <span class="sb-jp">${t.jp}</span>
+          <span class="sb-en">${t.en.split('—')[0].split('(')[0].trim()}</span>
+          ${done?`<span class="done-badge">✓</span>`:`<span class="tag-pill" style="${TAG_STYLE[cat.tag]}">${cat.tag}</span>`}
+        </button>`;
+      }).join('')}
+    </div>`).join('');
+  document.getElementById('progressSummary').textContent=`${completedTopics.length} / ${total} done`;
+}
+
+function showWelcome(){
+  document.getElementById('main').innerHTML=`
+    <div class="welcome">
+      <div class="welcome-kanji">語</div>
+      <h1>N5 Grammar Explorer</h1>
+      <p>Study all JLPT N5 grammar points with curated examples from <strong>Tae Kim's Grammar Guide</strong> and the <strong>Tatoeba Project</strong> (CC BY 2.0), plus AI-powered quizzes and sentence-building exercises.</p>
+      <div class="feat-grid">
+        <div class="feat"><div class="feat-icon" style="background:var(--blue-bg)">📖</div><h3>Learn</h3><p>Curated examples with audio, readings & word breakdowns</p></div>
+        <div class="feat"><div class="feat-icon" style="background:var(--amber-bg)">❓</div><h3>Quiz</h3><p>AI fill-in-the-blank questions with instant feedback</p></div>
+        <div class="feat"><div class="feat-icon" style="background:var(--green-bg)">🔨</div><h3>Build</h3><p>Tap word tiles to assemble correct sentences</p></div>
+      </div>
+      <div class="source-note">
+        <strong>Example sources:</strong> Learn mode uses hand-curated sentences from
+        <a href="https://guidetojapanese.org" target="_blank">Tae Kim's Guide to Japanese Grammar</a> and the
+        <a href="https://tatoeba.org" target="_blank">Tatoeba Project</a> (CC BY 2.0 FR).
+        Quiz and Build modes use AI-generated content. ← Select a topic from the sidebar to begin.
+      </div>
+    </div>`;
+}
+
+function pickTopic(id){
+  curTopic=id;curMode='learn';
+  qz={data:null,done:false,score:qz.score,total:qz.total,chosen:-1,right:false};
+  bd={data:null,tiles:[],ans:[],checked:false,correct:false};
+  if(window.innerWidth<=768)document.getElementById('sidebar').classList.remove('open');
+  buildSidebar();renderShell();renderLearn();
+}
+
+function renderShell(){
+  const t=getTopicInfo(curTopic);
+  const enPart=t.en.split('(')[0].split('—')[0].trim();
+  document.getElementById('main').innerHTML=`
+    <div class="topic-hd">
+      <div class="topic-breadcrumb">${t.cat}</div>
+      <div class="topic-title">${enPart}<span class="topic-jp">${t.jp}</span></div>
+      <div class="topic-src">Learn: Tae Kim + Tatoeba (CC) · Quiz & Build: AI-generated</div>
+    </div>
+    <div class="mode-tabs">
+      <button class="mode-tab on" id="tab-learn" onclick="switchMode('learn')">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 3h12M2 6h8M2 9h10M2 12h6"/></svg>Learn
+      </button>
+      <button class="mode-tab" id="tab-quiz" onclick="switchMode('quiz')">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 5.5c0-1 .8-1.5 1.5-1.5S11 4.5 11 5.5c0 1-.8 1.5-1.5 1.5H8v1"/><circle cx="8" cy="10.5" r=".75" fill="currentColor"/></svg>Quiz
+      </button>
+      <button class="mode-tab" id="tab-build" onclick="switchMode('build')">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="9" width="4" height="5" rx="1"/><rect x="6" y="6" width="4" height="8" rx="1"/><rect x="11" y="3" width="4" height="11" rx="1"/></svg>Build
+      </button>
+    </div>
+    <div id="mc"></div>`;
+}
+
+function switchMode(m){
+  curMode=m;
+  ['learn','quiz','build'].forEach(x=>document.getElementById('tab-'+x)?.classList.toggle('on',x===m));
+  if(m==='learn')renderLearn();
+  else if(m==='quiz'){qz={data:null,done:false,chosen:-1,right:false,score:qz.score,total:qz.total};loadAI('quiz');}
+  else{bd={data:null,tiles:[],ans:[],checked:false,correct:false};loadAI('build');}
+}
+
+function renderLearn(){
+  const mc=document.getElementById('mc');if(!mc)return;
+  const d=LEARN_DATA[curTopic];
+  if(!d){mc.innerHTML=`<div class="err-box">No learn data for this topic yet.</div>`;return;}
+  markDone(curTopic);
+  const exHtml=d.examples.map((ex,i)=>`
+    <div class="ex-card">
+      <div class="ex-top">
+        <div>
+          <div class="ex-jp jp">${ex.japanese}</div>
+          <div class="ex-rd">${ex.reading}</div>
+          <div class="ex-en">${ex.english}</div>
+        </div>
+        ${spk(ex.japanese,`spk-ex${i}`)}
+      </div>
+      <div class="ex-bd">${ex.breakdown.map(b=>`
+        <div class="bd-chip ${ROLE_CLS[b.role]||''}">
+          <span class="bd-jp">${b.word}</span>
+          <span class="bd-role">${b.role} · ${b.meaning}</span>
+        </div>`).join('')}
+      </div>
+    </div>`).join('');
+  mc.innerHTML=`
+    <div class="pattern-box">
+      <div class="box-label">Pattern</div>
+      <div class="formula">${d.pattern}</div>
+      <div class="expl">${d.explanation}</div>
+      ${d.tips.map(t=>`<div class="tip">💡 ${t}</div>`).join('')}
+      ${d.common_mistake?`<div class="warn">⚠ Common mistake: ${d.common_mistake}</div>`:''}
+    </div>
+    <div class="sec-label">Curated examples</div>
+    ${exHtml}
+    <div style="margin-top:1rem;display:flex;gap:7px;flex-wrap:wrap">
+      <button class="btn btn-sm btn-red" onclick="switchMode('quiz')">Take quiz →</button>
+      <button class="btn btn-sm" onclick="switchMode('build')">Try Build →</button>
+    </div>`;
+}
+
+async function loadAI(mode){
+  const mc=document.getElementById('mc');if(!mc)return;
+  if(mode==='quiz'&&qz.data){renderQuiz();return;}
+  if(mode==='build'&&bd.data){renderBuild();return;}
+  const msgs={quiz:'Generating quiz question…',build:'Building exercise…'};
+  mc.innerHTML=`<div class="loading"><div class="ld-dots"><div class="ld-dot"></div><div class="ld-dot"></div><div class="ld-dot"></div></div><div class="ld-msg">${msgs[mode]}</div></div>`;
+  const t=getTopicInfo(curTopic);
+  try{
+    if(mode==='quiz'){
+      const data=await callAI(SYS_QUIZ,`Create a fill-in-blank question for: ${t.en} [${t.jp}]. N5 level.`);
+      qz.data=data;renderQuiz();
+    } else {
+      const data=await callAI(SYS_BUILD,`Sentence-building exercise for: ${t.en} [${t.jp}]. N5 level.`);
+      bd.data=data;bd.tiles=data.tiles.map(x=>({...x,used:false}));bd.ans=[];bd.checked=false;bd.correct=false;renderBuild();
+    }
+  }catch(err){
+    mc.innerHTML=`<div class="err-box">⚠ ${err.message} <button class="btn btn-sm" style="margin-left:8px" onclick="loadAI('${mode}')">Try again</button></div>`;
+  }
+}
+
+function markDone(id){
+  if(!completedTopics.includes(id)){completedTopics.push(id);localStorage.setItem('n5_done',JSON.stringify(completedTopics));buildSidebar();}
+}
+
+function renderQuiz(){
+  const mc=document.getElementById('mc');if(!mc)return;
+  const d=qz.data;
+  const sentHtml=d.japanese.replace('___',`<span class="blank ${qz.done?(qz.right?'ok':'ng'):''}" id="qblank">${qz.done?d.choices[d.correct_index]:'\u00a0\u00a0\u00a0\u00a0'}</span>`);
+  const choicesHtml=d.choices.map((c,i)=>{
+    let cls='';if(qz.done){if(i===d.correct_index)cls='ok';else if(i===qz.chosen)cls='ng';}
+    return`<button class="choice ${cls}" id="ch${i}" onclick="answerQuiz(${i})" ${qz.done?'disabled':''}><span class="choice-txt">${c}</span>${spk(c,`spk-ch${i}`)}</button>`;
+  }).join('');
+  mc.innerHTML=`
+    <div class="quiz-stat">${qz.score} / ${qz.total} correct</div>
+    <div class="quiz-card">
+      <div class="quiz-prompt">Choose the correct word:</div>
+      <div class="quiz-sent jp">${sentHtml}</div>
+      <div class="quiz-rd">${d.reading}</div>
+      <div class="quiz-en">${d.english}</div>
+    </div>
+    <div class="choices">${choicesHtml}</div>
+    <div class="quiz-fb ${qz.done?'show '+(qz.right?'ok':'ng'):''}" id="qfb">
+      ${qz.done?(qz.right?'✓ Correct! ':'✗ Incorrect. ')+d.explanation:''}
+    </div>
+    ${qz.done?`<div style="display:flex;gap:7px;margin-top:.75rem;flex-wrap:wrap"><button class="btn" onclick="nextQuiz()">Next question →</button><button class="btn btn-red btn-sm" onclick="switchMode('build')">Try Build →</button></div>`:''}`;
+}
+
+function answerQuiz(i){
+  if(qz.done)return;qz.done=true;qz.total++;qz.chosen=i;qz.right=i===qz.data.correct_index;
+  if(qz.right){qz.score++;speak(qz.data.choices[i]);}
+  renderQuiz();
+}
+function nextQuiz(){qz.data=null;qz.done=false;qz.chosen=-1;qz.right=false;loadAI('quiz');}
+
+function renderBuild(){
+  const mc=document.getElementById('mc');if(!mc)return;
+  const d=bd.data;
+  const ansHtml=bd.ans.length
+    ?bd.ans.map(id=>{const t=bd.tiles.find(t=>t.id===id);return`<span class="tile in-ans jp" onclick="removeTile(${id})" title="${t?.reading||''}">${t?.jp}</span>`;}).join('')
+    :`<span class="ans-ph">Tap words below to build the sentence…</span>`;
+  const bankHtml=bd.tiles.map(t=>`<span class="tile jp ${t.used?'used':''}" onclick="addTile(${t.id})" title="${t.reading}">${t.jp}</span>`).join('');
+  const fbHtml=bd.checked?`<div class="build-fb ${bd.correct?'ok':'ng'}">
+    ${bd.correct?'✓ Correct! ':'✗ Not quite. Correct: '}
+    <span class="jp">${d.full_japanese}</span><br>
+    <span style="font-size:12px;opacity:.8;font-style:italic">${d.reading}</span><br>
+    <span style="font-size:12.5px;margin-top:4px;display:block">${d.explanation}</span>
+  </div>`:'';
+  mc.innerHTML=`
+    <div class="build-card">
+      <div class="build-en">${d.english}</div>
+      <div class="build-hint">Hint: ${d.hint}</div>
+    </div>
+    <p style="font-size:12px;color:var(--text3);margin-bottom:6px">Tap to add · tap again to remove:</p>
+    <div class="ans-zone ${bd.checked?(bd.correct?'ok':'ng'):''}">${ansHtml}</div>
+    <div class="word-bank">${bankHtml}</div>
+    <div class="build-actions">
+      <button class="btn btn-red" onclick="checkBuild()">Check</button>
+      <button class="btn" onclick="clearBuild()">Clear</button>
+      <button class="btn" onclick="newBuild()">New sentence →</button>
+      ${bd.checked?spk(d.full_japanese,'spk-ans'):''}
+    </div>
+    ${fbHtml}`;
+}
+
+function addTile(id){if(bd.checked)return;const t=bd.tiles.find(t=>t.id===id);if(!t||t.used)return;t.used=true;bd.ans.push(id);renderBuild();}
+function removeTile(id){if(bd.checked)return;const t=bd.tiles.find(t=>t.id===id);if(!t)return;t.used=false;bd.ans=bd.ans.filter(a=>a!==id);renderBuild();}
+function clearBuild(){bd.tiles.forEach(t=>t.used=false);bd.ans=[];bd.checked=false;bd.correct=false;renderBuild();}
+function checkBuild(){
+  if(!bd.ans.length)return;
+  const typed=bd.ans.map(id=>bd.tiles.find(t=>t.id===id)?.jp||'').join('');
+  const correct=bd.data.correct_order.map(id=>bd.data.tiles.find(t=>t.id===id)?.jp||'').join('');
+  bd.correct=typed===correct;bd.checked=true;
+  if(bd.correct)speak(bd.data.full_japanese);
+  renderBuild();
+}
+function newBuild(){bd={data:null,tiles:[],ans:[],checked:false,correct:false};loadAI('build');}
+
+buildSidebar();
+showWelcome();
+</script>
+</body>
+</html>
